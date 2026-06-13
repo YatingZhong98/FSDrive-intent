@@ -1,5 +1,5 @@
 ### model
-model_name_or_path: /anvme/workspace/b305bb10-zyt/FSDrive/models/Qwen2-VL-2B-Instruct
+model_name_or_path: saves/qwen2_vl-2b/pretrain_three_datasets
 image_max_pixels: 524288
 video_max_pixels: 16384
 trust_remote_code: true
@@ -18,10 +18,11 @@ freeze_multi_modal_projector: true # choices: [true, false]
 freeze_language_model: false
 deepspeed: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/examples/deepspeed/ds_z0_config.json
 
+
 ### dataset
 dataset_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/data
 media_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory
-dataset: pretrain_data
+dataset: train_cot_motion_front,train_drivelm_gvqa
 template: qwen2_vl
 cutoff_len: 32768
 max_new_tokens: 2048
@@ -30,19 +31,18 @@ overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/qwen2_vl-2b/pretrain_full
+output_dir: saves/qwen2_vl-2b/sft_drivelm_front
 logging_steps: 10
 save_steps: 1000
-save_total_limit: 3
 plot_loss: true
 report_to: none
 overwrite_output_dir: false
 
 ### train
-per_device_train_batch_size: 16
-gradient_accumulation_steps: 2
-learning_rate: 5.0e-4
-num_train_epochs: 32.0
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 1
+learning_rate: 1.0e-4
+num_train_epochs: 12.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 bf16: true

@@ -29,9 +29,9 @@ def draw_plan(sample_token, nusc, plan_trajs_dict, output_path):
     gt_traj = plan_trajs_dict['label']
 
     try:
-        numbers = re.findall(r'\((\d+\.\d+),(\d+\.\d+)\)', plan_traj)
+        numbers = re.findall(r'\((-?\d+\.\d+),(-?\d+\.\d+)\)', plan_traj)
         plan_traj = [(float(x), float(y)) for x, y in numbers]
-        numbers = re.findall(r'\((\d+\.\d+),(\d+\.\d+)\)', gt_traj)
+        numbers = re.findall(r'\((-?\d+\.\d+),(-?\d+\.\d+)\)', gt_traj)
         gt_traj = [(float(x), float(y)) for x, y in numbers]
         plan_traj = np.concatenate([plan_traj, np.ones((6,1))], axis=-1)
         gt_traj = np.concatenate([gt_traj, np.ones((6,1))], axis=-1)
@@ -79,8 +79,10 @@ def load_pred_trajs_from_json(path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process NuScenes trajectory visualization.')
-    parser.add_argument('--dataroot', type=str, default='./LLaMA-Factory/data/nuscenes',
+    parser.add_argument('--dataroot', type=str, default='./LlamaFactory/data/nuscenes',
                         help='Path to NuScenes dataset root directory')
+    parser.add_argument('--version', type=str, default='v1.0-trainval',
+                        help='NuScenes version to load')
     parser.add_argument('--pred-trajs-path', type=str, required=True,
                         help='Path to prediction trajectories JSONL file')
     parser.add_argument('--tokens-path', type=str, required=True,
@@ -90,7 +92,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    nusc = NuScenes(version="v1.0-trainval", dataroot=args.dataroot, verbose=True)
+    nusc = NuScenes(version=args.version, dataroot=args.dataroot, verbose=True)
     plan_trajs_dict = load_pred_trajs_from_json(args.pred_trajs_path)
     tokens = json.load(open(args.tokens_path, 'r'))
     os.makedirs(args.output_path, exist_ok=True)

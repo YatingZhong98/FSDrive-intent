@@ -8,6 +8,8 @@ from tqdm import tqdm
 from nuscenes.nuscenes import NuScenes
 from datetime import datetime, timedelta
 
+os.environ.setdefault("TIKTOKEN_CACHE_DIR", "/anvme/workspace/b305bb10-zyt/FSDrive/.cache/tiktoken")
+
 system="""You're an autonomous vehicle's brain. Coordinates: X-axis is perpendicular, and Y-axis is parallel to the direction you're facing. You're at point (0,0). Units: meters. Based on the provided particulars, you can generate CAM_FRONT image at the 0.5 second in the future.\n"""
 
 encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
@@ -19,7 +21,7 @@ traj_only = True
 train_messages = []
 
 gt_indices=json.load(open('./MoVQGAN/gt_indices_pretrain.json'))
-dataroot = './LLaMA-Factory/data/nuscenes'
+dataroot = './LlamaFactory/data/nuscenes'
 nusc = NuScenes(version='v1.0-trainval', dataroot=dataroot, verbose=True)
 
 cam_front_dir = os.path.join(dataroot, 'sweeps/CAM_FRONT')
@@ -99,7 +101,7 @@ for i, now_path in enumerate(tqdm(image_files)):
         train_messages.append(train_message)
 
 
-with open("./LLaMA-Factory/data/pretrain_data.json", "w") as f:
+with open("./LlamaFactory/data/pretrain_data.json", "w") as f:
     json.dump(train_messages, f, indent=4)
 
 

@@ -1,0 +1,57 @@
+### model
+model_name_or_path: saves/qwen2_vl-2b/pretrain_full
+image_max_pixels: 524288
+video_max_pixels: 16384
+trust_remote_code: true
+resize_vocab: true
+
+enable_liger_kernel: true
+use_unsloth_gc: true
+flash_attn: fa2
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+freeze_vision_tower: true # choices: [true, false]
+freeze_multi_modal_projector: true # choices: [true, false]
+freeze_language_model: false
+deepspeed: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/examples/deepspeed/ds_z0_config.json
+
+
+### dataset
+dataset_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/data
+media_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory
+dataset: train_cot_motion_intent_k32
+template: qwen2_vl
+cutoff_len: 32768
+max_new_tokens: 2048
+max_samples: 10000000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: saves/qwen2_vl-2b/sft_intent_k32
+logging_steps: 10
+save_steps: 1000
+plot_loss: true
+report_to: none
+overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: 16
+gradient_accumulation_steps: 2
+learning_rate: 1.0e-4
+num_train_epochs: 12.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+temperature: 0.1
+top_p: 0.1
+top_k: 10
+
+skip_special_tokens: false
+
+add_special_tokens: "<|intent_000|>,<|intent_001|>,<|intent_002|>,<|intent_003|>,<|intent_004|>,<|intent_005|>,<|intent_006|>,<|intent_007|>,<|intent_008|>,<|intent_009|>,<|intent_010|>,<|intent_011|>,<|intent_012|>,<|intent_013|>,<|intent_014|>,<|intent_015|>,<|intent_016|>,<|intent_017|>,<|intent_018|>,<|intent_019|>,<|intent_020|>,<|intent_021|>,<|intent_022|>,<|intent_023|>,<|intent_024|>,<|intent_025|>,<|intent_026|>,<|intent_027|>,<|intent_028|>,<|intent_029|>,<|intent_030|>,<|intent_031|>"

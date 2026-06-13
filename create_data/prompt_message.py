@@ -1,19 +1,24 @@
 import numpy as np
 
-def generate_user_message(data, token, perception_range=20.0, short=True):
+CAMERA_TYPES = [
+    'CAM_FRONT',
+    'CAM_FRONT_LEFT',
+    'CAM_FRONT_RIGHT',
+    'CAM_BACK',
+    'CAM_BACK_LEFT',
+    'CAM_BACK_RIGHT',
+]
+
+
+def generate_user_message(data, token, perception_range=20.0, short=True, camera_types=None):
 
     # user_message  = f"You have received new input data to help you plan your route.\n"
     user_message  = f"Here's some information you'll need:\n"
     
     data_dict = data[token]
-    camera_types = [
-            'CAM_FRONT',
-            'CAM_FRONT_LEFT',
-            'CAM_FRONT_RIGHT',
-            'CAM_BACK',
-            'CAM_BACK_LEFT',
-            'CAM_BACK_RIGHT',
-        ]
+    if camera_types is None:
+        camera_types = CAMERA_TYPES
+
     images_path = []
     for cam in camera_types:
         images_path.append(data_dict['cams'][cam]['data_path'].replace('/localdata_ssd/nuScenes', 'data/nuscenes', 1))
@@ -82,5 +87,3 @@ def generate_assistant_message(data, token, traj_only = False):
         assitant_message += f"Trajectory:\n"    
     assitant_message += f"[({x1:.2f},{y1:.2f}), ({x2:.2f},{y2:.2f}), ({x3:.2f},{y3:.2f}), ({x4:.2f},{y4:.2f}), ({x5:.2f},{y5:.2f}), ({x6:.2f},{y6:.2f})]"
     return assitant_message
-
-

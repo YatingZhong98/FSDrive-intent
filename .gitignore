@@ -1,0 +1,29 @@
+# Runtime caches
+__pycache__/
+*.py[cod]
+.cache/
+.pytest_cache/
+.vscode/
+
+# Experiment outputs
+logs/
+batch_script/logs/
+vis_cot/
+vis_cot_mini/
+vis_traj/
+vis_traj_mini/
+
+# Large local datasets and model artifacts
+data_nusc/
+data_nusc.zip
+models/
+DriveLM/
+MoVQGAN/pretrained/
+LlamaFactory/eval_results/
+LlamaFactory/saves/
+LLaMA-Factory/eval_results/
+LLaMA-Factory/saves/
+
+# Generated metric/data caches
+create_data/cached_nuscenes_info.pkl
+tools/data/metrics/

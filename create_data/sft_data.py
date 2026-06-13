@@ -2,15 +2,35 @@ import pickle
 import re
 import json
 import argparse
+import os
 import tiktoken
 from nuscenes.nuscenes import NuScenes
 from prompt_message import  generate_user_message, generate_assistant_message
 
+os.environ.setdefault("TIKTOKEN_CACHE_DIR", "/anvme/workspace/b305bb10-zyt/FSDrive/.cache/tiktoken")
+
 system="You're an autonomous vehicle's brain. Coordinates: X-axis is perpendicular, and Y-axis is parallel to the direction you're facing. You're at point (0,0). Units: meters. Based on the provided particulars, please output the CAM_FRONT image at the 0.5 second in the future and plan waypoints (0.5s intervals) for the next 3 seconds."
+all_camera_types = [
+    'CAM_FRONT',
+    'CAM_FRONT_LEFT',
+    'CAM_FRONT_RIGHT',
+    'CAM_BACK',
+    'CAM_BACK_LEFT',
+    'CAM_BACK_RIGHT',
+]
 
 parser = argparse.ArgumentParser(description="Choose to use train or val tokens.")
 parser.add_argument("--split", type=str, default="train", choices=["train", "val"], help="Select 'train' or 'val' token set")
+parser.add_argument("--camera_mode", type=str, default="all", choices=["all", "front"], help="Select all six cameras or CAM_FRONT only")
+parser.add_argument("--output_suffix", type=str, default="", help="Optional suffix for the output json name")
 args = parser.parse_args()
+
+if args.camera_mode == "front":
+    camera_types = ['CAM_FRONT']
+    image_prompt = "Here is the current front camera image from the car: 'CAM_FRONT': <image>\n"
+else:
+    camera_types = all_camera_types
+    image_prompt = "Here are current six images from the car: 'CAM_FRONT': <image>\n,'CAM_FRONT_LEFT': <image>\n, 'CAM_FRONT_RIGHT': <image>\n,'CAM_BACK': <image>\n,'CAM_BACK_LEFT': <image>\n, 'CAM_BACK_RIGHT': <image>\n"
 
 data = pickle.load(open('./create_data/cached_nuscenes_info.pkl', 'rb'))
 split = json.load(open('./create_data/full_split.json', 'r'))
@@ -25,7 +45,7 @@ num_user_tokens = 0
 num_assistant_tokens = 0
 traj_only = True
 
-dataroot = './LLaMA-Factory/data/nuscenes'
+dataroot = './LlamaFactory/data/nuscenes'
 nusc = NuScenes(version='v1.0-trainval', dataroot=dataroot, verbose=True)
 sft_indices = json.load(open('./MoVQGAN/gt_indices_sft.json'))
 train_messages = []
@@ -34,7 +54,7 @@ for token_i, token in enumerate(tokens):
     if token_i >= train_ratio * num_train_samples:
         break 
     assitant_message = generate_assistant_message(data, token, traj_only=traj_only)
-    user_message, images_path = generate_user_message(data, token)
+    user_message, images_path = generate_user_message(data, token, camera_types=camera_types)
 
     if len(assitant_message.split("\n")) > 6:
         print()
@@ -62,7 +82,7 @@ for token_i, token in enumerate(tokens):
                         "conversations": [
                             {
                                 "from": "human",
-                                "value": "Here are current six images from the car: 'CAM_FRONT': <image>\n,'CAM_FRONT_LEFT': <image>\n, 'CAM_FRONT_RIGHT': <image>\n,'CAM_BACK': <image>\n,'CAM_BACK_LEFT': <image>\n, 'CAM_BACK_RIGHT': <image>\n" + user_message + "Based on the provided particulars, please output the CAM_FRONT image at the 0.5 second in the future and plan waypoints (0.5s intervals) for the next 3 seconds.\n"                                
+                                "value": image_prompt + user_message + "Based on the provided particulars, please output the CAM_FRONT image at the 0.5 second in the future and plan waypoints (0.5s intervals) for the next 3 seconds.\n"
                             },
                             {
                                 "from": "gpt",                                
@@ -78,7 +98,6 @@ print(f"Number of assistant tokens: {num_assistant_tokens}")
 print(f"Number of total tokens: {num_language_tokens}")
 
 
-with open(f"./LLaMA-Factory/data/{args.split}_cot_motion.json", "w") as f:
+output_suffix = f"_{args.output_suffix}" if args.output_suffix else ""
+with open(f"./LlamaFactory/data/{args.split}_cot_motion{output_suffix}.json", "w") as f:
     json.dump(train_messages, f, indent=4)
-
-

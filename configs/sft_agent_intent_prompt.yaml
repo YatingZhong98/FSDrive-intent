@@ -1,0 +1,57 @@
+### model
+model_name_or_path: saves/qwen2_vl-2b/pretrain_three_datasets
+image_max_pixels: 524288
+video_max_pixels: 16384
+trust_remote_code: true
+resize_vocab: true
+
+enable_liger_kernel: true
+use_unsloth_gc: true
+flash_attn: fa2
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+freeze_vision_tower: true # choices: [true, false]
+freeze_multi_modal_projector: true # choices: [true, false]
+freeze_language_model: false
+deepspeed: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/examples/deepspeed/ds_z0_config.json
+
+
+### dataset
+dataset_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/data
+media_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory
+dataset: train_cot_motion_agent_intent_prompt
+template: qwen2_vl
+cutoff_len: 32768
+max_new_tokens: 2048
+max_samples: 10000000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: saves/qwen2_vl-2b/sft_agent_intent_prompt
+logging_steps: 10
+save_steps: 1000
+plot_loss: true
+report_to: none
+overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: 16
+gradient_accumulation_steps: 2
+learning_rate: 1.0e-4
+num_train_epochs: 12.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+temperature: 0.1
+top_p: 0.1
+top_k: 10
+
+skip_special_tokens: false
+
+add_special_tokens: "<|agent_none|>,<|agent_intent_000|>,<|agent_intent_001|>,<|agent_intent_002|>,<|agent_intent_003|>,<|agent_intent_004|>,<|agent_intent_005|>,<|agent_intent_006|>,<|agent_intent_007|>,<|agent_intent_008|>,<|agent_intent_009|>,<|agent_intent_010|>,<|agent_intent_011|>,<|agent_intent_012|>,<|agent_intent_013|>,<|agent_intent_014|>,<|agent_intent_015|>,<|agent_intent_016|>,<|agent_intent_017|>,<|agent_intent_018|>,<|agent_intent_019|>,<|agent_intent_020|>,<|agent_intent_021|>,<|agent_intent_022|>,<|agent_intent_023|>,<|agent_intent_024|>,<|agent_intent_025|>,<|agent_intent_026|>,<|agent_intent_027|>,<|agent_intent_028|>,<|agent_intent_029|>,<|agent_intent_030|>,<|agent_intent_031|>,<|agent_intent_032|>,<|agent_intent_033|>,<|agent_intent_034|>,<|agent_intent_035|>,<|agent_intent_036|>,<|agent_intent_037|>,<|agent_intent_038|>,<|agent_intent_039|>,<|agent_intent_040|>,<|agent_intent_041|>,<|agent_intent_042|>,<|agent_intent_043|>,<|agent_intent_044|>,<|agent_intent_045|>,<|agent_intent_046|>,<|agent_intent_047|>,<|agent_intent_048|>,<|agent_intent_049|>,<|agent_intent_050|>,<|agent_intent_051|>,<|agent_intent_052|>,<|agent_intent_053|>,<|agent_intent_054|>,<|agent_intent_055|>,<|agent_intent_056|>,<|agent_intent_057|>,<|agent_intent_058|>,<|agent_intent_059|>,<|agent_intent_060|>,<|agent_intent_061|>,<|agent_intent_062|>,<|agent_intent_063|>"

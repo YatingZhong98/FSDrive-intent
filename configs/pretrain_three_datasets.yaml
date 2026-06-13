@@ -21,7 +21,7 @@ deepspeed: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/examples/deepspeed
 ### dataset
 dataset_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory/data
 media_dir: /anvme/workspace/b305bb10-zyt/FSDrive/LlamaFactory
-dataset: pretrain_data
+dataset: pretrain_data,pretrain_nuscenes_lane_data,pretrain_nuscenes_3d_detection_data,pretrain_omnidrive_data
 template: qwen2_vl
 cutoff_len: 32768
 max_new_tokens: 2048
@@ -30,10 +30,10 @@ overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/qwen2_vl-2b/pretrain_full
+output_dir: saves/qwen2_vl-2b/pretrain_three_datasets
 logging_steps: 10
 save_steps: 1000
-save_total_limit: 3
+# save_total_limit: 3
 plot_loss: true
 report_to: none
 overwrite_output_dir: false
@@ -42,7 +42,7 @@ overwrite_output_dir: false
 per_device_train_batch_size: 16
 gradient_accumulation_steps: 2
 learning_rate: 5.0e-4
-num_train_epochs: 32.0
+num_train_epochs: 3.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 bf16: true
